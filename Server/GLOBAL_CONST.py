@@ -1,0 +1,7 @@
+
+
+
+
+DATABASE_FILE_NAME:str = "data.db"
+MAX_COIN_COUNT:int = 1024 #10bits
+MAX_WALLET_COUNT:int = 256
