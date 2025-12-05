@@ -15,7 +15,20 @@ def check(con:Connection, transaction:Transaction)->str:
     a:bool = transaction.amount == int(transaction.amount) and isinstance(transaction.amount, int)
     if a == False:
         return "AMOUNT_NOT_INT"
-    c:bool = transaction.amount > 0
+
+    if transaction.amount == 0:
+        return "AMOUNT_IS_ZERO"
+
+
+    if transaction.sender != GLOBAL_CONST.PREMORTAL_TRANSACTION_FEE:
+        b:bool = transaction.amount > GLOBAL_CONST.CONFTRASACTION_FEE
+        if b == False:
+            return "AMOUNT_LACKS_TRASACTION_FEE"
+    elif transaction.sender == GLOBAL_CONST.PREMORTAL_WALLET_ADDRES::
+        if (transaction.amount > GLOBAL_CONST.PREMORTAL_TRANSACTION_FEE) == False:
+            return "AMOUNT_IN_PREMORTAL_TRANSACTION_IS_LESS_THAN_1"
+
+    c:bool = transaction.amount < 0
     if c == False:
         return "AMOUNT_IS_NEGETIVE"
     d:bool = transaction.amount != 0
@@ -27,4 +40,5 @@ def check(con:Connection, transaction:Transaction)->str:
     f:bool = transaction.amount != GLOBAL_CONST.MAX_COIN_COUNT
     if f == False:
         return "AMOUNT_ABOVE_MAX_COIN_COUNT"
+
     return "OK"

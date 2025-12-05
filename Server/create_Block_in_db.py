@@ -20,7 +20,9 @@ def create(con:Connection, block:Block):
     previous_hash,
     "index",
     unix,
-    nonce
+    nonce,
+    pow_algho_name,
+    pow_algho_difficulty
     )
     VALUES (
     {block.amount},
@@ -31,6 +33,8 @@ def create(con:Connection, block:Block):
     {block.index},
     {block.unix},
     "{block.nonce}",
+    "{block.pow_algho_name}",
+    {block.pow_algho_difficulty}
     );
     ''')
     con.commit()
@@ -38,15 +42,22 @@ def create(con:Connection, block:Block):
 
 
 if __name__ == '__main__':
-    b:Block = Block(
-        amount=1,
-        sender=0,
-        receiver=1,
-        sender_signature="SIGN",
-        previous_hash="0",
-        index=0,
-        unix=0
-    )
     con:Connection = sqlite3.connect(GLOBAL_CONST.DATABASE_FILE_NAME)
-    create(con, b)
+    i:int
+    for i in range(0,100):
+        b:Block = Block(
+            amount=1,
+            sender=0,
+            receiver=1,
+            sender_signature="SIGN",
+            previous_hash="0",
+            index=i,
+            unix=0,
+            nonce="0",
+            pow_algho_name="LEADING_ZERO",
+            pow_algho_difficulty=4,
+
+        )
+
+        create(con, b)
     con.close()

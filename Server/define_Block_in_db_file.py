@@ -23,6 +23,8 @@ CREATE TABLE "Block" (
 	"unix"	INTEGER NOT NULL,
 	"previous_hash"	TEXT NOT NULL,
 	"nonce" TEXT NOT NULL,
+	"pow_algho_name" TEXT NOT NULL,
+    "pow_algho_difficulty" INTEGER NOT NULL,
 	PRIMARY KEY("index")
 );
     ''')

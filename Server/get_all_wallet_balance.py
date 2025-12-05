@@ -6,9 +6,11 @@ from Block import Block
 from Wallet import Wallet
 import make_connection_to_db
 import read_all_Wallet_from_db
+import get_all_wallet_balance_without_db
 
 
-# note sending amout to a non existent, considers the sent amount burnt untill the wallet starts existing
+#note this function reads from db a non-db variant do exist
+
 
 def get(con:Connection)->Dict[int,int]:
     #where key is the address of wallet and amount is the balance
@@ -18,17 +20,8 @@ def get(con:Connection)->Dict[int,int]:
     for wallet in read_all_Wallet_from_db.read(con):
         output[wallet.address]= 0
 
+    get_all_wallet_balance_without_db.get(blocks=read_all_Block_from_db.read(con))
 
-    block: Block
-    for block in read_all_Block_from_db.read(con):
-        if block.sender not in output:
-            output[block.sender] = 0
-        if block.receiver not in output:
-            output[block.receiver] = 0
-
-
-        output[block.sender] -= block.amount
-        output[block.receiver] += block.amount
     return output
 
 

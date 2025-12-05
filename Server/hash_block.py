@@ -1,3 +1,4 @@
+import base64
 
 
 
@@ -21,6 +22,8 @@ if __name__ == "__main__":
         previous_hash="0",
         index=0,
         unix=0,
-        nonce=0,
+        nonce="0",
+        pow_algho_name="LEADING_ZERO",
+        pow_algho_difficulty=4,
     )
-    print(hash(b))
+    print((hash(b)))

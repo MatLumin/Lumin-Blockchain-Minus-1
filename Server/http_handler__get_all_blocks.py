@@ -21,6 +21,8 @@ def function(con:Connection)->Dict[str,Any]:
             "index":b.index,
             "unix":b.unix,
             "nonce":b.nonce,
+            "pow_algho_name":b.pow_algho_name,
+            "pow_algho_difficulty":b.pow_algho_difficulty
         }
 
     return {

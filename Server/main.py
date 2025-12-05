@@ -22,13 +22,19 @@ import http_handler__get_all_wallets_balance
 import http_handler__get_all_blocks
 import  http_handler__make_wallet
 import http_handler__make_transaction
+import http_handler__start_mining_quiz
+import http_handler__submit_answer_for_free_mining_quiz
+#structs
+from Quiz import Quiz
+
+
 
 threads:List[Thread] = []
 
 
 app:Flask = Flask(__name__)
 DB_CONNECTION:sqlite3.Connection = sqlite3.connect(GLOBAL_CONST.DATABASE_FILE_NAME, check_same_thread=False)
-
+free_mining_quizes:Dict[int, Quiz] = dict()
 
 
 
@@ -63,6 +69,20 @@ def h2():
 @app.post("/make_transaction")
 def h3():
     return http_handler__make_transaction.function(DB_CONNECTION, flask.request)
+
+
+"""
+@app.post("/start_free_mining_quizes")
+def h4():
+    return http_handler__start_mining_quiz.function(free_mining_quizes, flask.request)
+"""
+
+"""
+@app.post("/submit_answer_for_free_mining_quiz")
+def h5():
+    return http_handler__submit_answer_for_free_mining_quiz.function(free_mining_quizes, flask.request)
+"""
+
 
 
 

@@ -35,10 +35,11 @@ def function(con:Connection, req:Request)->Dict[str,Any]:
             "exit_code":"SENDER_WALLET_DOES_NOT_EXIST",
         }
 
-    if is_transaction_valid_by_address.check(con, t) == False:
+    address_check_exit_code:str = is_transaction_valid_by_address.check(con, t)
+    if address_check_exit_code != "OK":
         return {
             "is_ok":False,
-            "exit_code":"TRANSACTION_ADDRESS_VALUES_INVALID",
+            "exit_code":address_check_exit_code,
         }
 
     amount_check_exit_code:str = is_tarnsaction_valid_by_amount.check(con, t)

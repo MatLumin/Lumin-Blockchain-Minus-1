@@ -20,7 +20,9 @@ def read(con:Connection)->List[Block]:
         "index",
         unix,
         previous_hash,
-        nonce
+        nonce,
+        pow_algho_name,
+        pow_algho_difficulty
     FROM Block
     """)
     data:List[Tuple] = cur.fetchall()
@@ -35,6 +37,8 @@ def read(con:Connection)->List[Block]:
                 unix=row[5],
                 previous_hash=row[6],
                 nonce=row[7],
+                pow_algho_name=row[8],
+                pow_algho_difficulty=row[9],
             )
         )
 
