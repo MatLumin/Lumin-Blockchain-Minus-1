@@ -13,8 +13,11 @@ from Block import Block
 import turn_bytes_to_base64_string
 import get_keys_of_dict
 from Wallet import Wallet
+from Transaction import Transaction
 import generate_all_possible_wallets_for_test_purpose
 import sign_transaction
+import is_transaction_valid_by_address_without_db
+import is_tarnsaction_valid_by_amount_without_db
 
 
 def generate(length:int, difficulty:int)->List[Block]:
@@ -23,13 +26,16 @@ def generate(length:int, difficulty:int)->List[Block]:
 
     list_of_all_wallet_addresses:List[int] = list(range(0, GLOBAL_CONST.MAX_WALLET_COUNT))
     print("list_of_all_wallet_addresses", list_of_all_wallet_addresses)
-    input("press enter")
     premortal_balance:int = GLOBAL_CONST.MAX_COIN_COUNT
 
 
     #first transfer initial balance of the wallets from premortal wallet
     previous_hash:str=None
     while True:
+        if premortal_balance < GLOBAL_CONST.PREMORTAL_MINING_REWARD:
+            print("ooopsie")
+            break
+
         print(premortal_balance)
         if premortal_balance == 0:
             break
@@ -65,26 +71,91 @@ def generate(length:int, difficulty:int)->List[Block]:
 
 
     all_wallets:List[Wallet] = None
-    wallets_priv_key:List[PrivateKey] = None
+    wallets_priv_keys:List[PrivateKey] = None
+    print("generating wallets and private keys")
     all_wallets, wallets_priv_key = generate_all_possible_wallets_for_test_purpose.generatre()
-
+    print("done generating wallets and private keys")
 
     i:int
     for i in range(0, length):
 
-        balance:Dict[int,int] = get_all_wallet_balance_without_db.get(output)
+        balances:Dict[int,int] = get_all_wallet_balance_without_db.get(output)
+
+        #pick a sender
+        sender:int = None
+        while sender is None:
+            candidate_for_sending:int = random.choice(list_of_all_wallet_addresses)
+            print("candidate_for_sending",candidate_for_sending)
+            #first chek it has the minimum credit
+            balance:Union[int,None] = balances.get(candidate_for_sending)
+            if balance is None: #no freaking balance da
+                continue
+
+            if balance < (GLOBAL_CONST.NORMAL_TRANSACTION_FEE + 1):
+                continue #it does not have the minimum networth
+
+            sender = candidate_for_sending
 
 
-        #pick a random sender
-        sender:int = random.choice(get_keys_of_dict.get(balance))
-        print("sender",sender)
-        #pick a random receiver
+        #getting the wallet lol
+        sender_wallet:Wallet = None
+        i:Wallet
+        for i in all_wallets:
+            if i.address == sender:
+                sender_wallet = i
+
+
+        #finding a receiver
         receiver:int = None
-        while (receiver is None)==False and receiver != sender:
-            receiver = random.choice(list_of_all_wallet_addresses)
+        while receiver is None:
+            candidate_for_receiving:int = random.choice(list_of_all_wallet_addresses)
+            print("candidate_for_receiving", candidate_for_receiving)
+            if candidate_for_receiving == sender:
+                #sender rend creciver are the same
+                continue
+
+            #nothing else to check tho
+            receiver = candidate_for_receiving
+
+
+        print(f"""
+        sender:{sender}
+        sender_walelt:{sender_wallet}
+        receiver:{receiver}
+        """)
+
+
 
         #random amount from sender's networth
-        amount:int = random.randint(0,balance[sender])
+        amount:int = random.randint(0,balances[sender])
+        balances[sender] -= amount
+
+        print("forming the transaction")
+        t:Transaction = Transaction(
+            sender=sender,
+            receiver=receiver,
+            sender_signature="TO_BE_SIGNED",
+            amount=amount,
+        )
+        print("done forming the transaction")
+
+        print("signing the transaction")
+        sign_transaction.sign(
+            t=t,
+            private_key=wallets_priv_key[sender],
+            wallet_of_sender=sender_wallet,
+        )
+        print("done signing the transaction")
+
+        print("now checking the created transaction")
+        is_valid_by_address:str = is_transaction_valid_by_address_without_db.check(t)
+        is_valid_by_amount:str = is_tarnsaction_valid_by_amount_without_db.check(balances[sender], t)
+
+        print("transaction", t)
+
+        print("is_valid_by_address",is_valid_by_address)
+        print("is_valid_by_amount",is_valid_by_amount)
+
 
         b:Block = Block(
             amount=amount,
@@ -98,7 +169,6 @@ def generate(length:int, difficulty:int)->List[Block]:
             pow_algho_name="LEADING_ZERO",
             pow_algho_difficulty=GLOBAL_CONST.NORMAL_TRANSACTION_DIFFICULTY,
         )
-
         leading_zero_solver.solve(b)
         output.append(b)
 
