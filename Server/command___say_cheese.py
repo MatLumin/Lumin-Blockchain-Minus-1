@@ -4,6 +4,7 @@
 import os
 import math
 import argparse
+import random
 from typing import List
 from PIL import Image
 
@@ -47,7 +48,7 @@ def string_to_bitmap_data(s: str):
     pixels = []
     for ch in s:
         # Map character to 0-255 grayscale
-        v = ord(ch) % 256
+        v = random.randint(1,255)#ord(ch) % 256 #dont want to leak the code lol
         pixels.append(v)
 
     # Pad any remaining pixels with 0 (black)

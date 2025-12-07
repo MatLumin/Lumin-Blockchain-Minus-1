@@ -3,6 +3,7 @@ from sqlite3 import Connection
 
 from Transaction import Transaction
 from GLOBAL_CONST import MAX_WALLET_COUNT
+import GLOBAL_CONST
 import does_wallet_exist_in_db
 
 
@@ -15,9 +16,14 @@ def check(t:Transaction)->str:
 
     #sender part
 
-    a:bool = 0 <= t.sender < MAX_WALLET_COUNT
-    if a == False:
-        return "SENDER_ADDRESS_NOT_IN_VALID_RANGE"
+    if t.sender != GLOBAL_CONST.PREMORTAL_WALLET_ADDRES:
+        a:bool = 0 <= t.sender < MAX_WALLET_COUNT
+        if a == False:
+            return "SENDER_ADDRESS_NOT_IN_VALID_RANGE"
+    elif t.sender == GLOBAL_CONST.PREMORTAL_WALLET_ADDRES:
+        #ITS OK
+        pass
+
     b:bool = isinstance(t.sender, int)
     if b == False:
         return "SENDER_ADDRESS_IS_NOT_INT"

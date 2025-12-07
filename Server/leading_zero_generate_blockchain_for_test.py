@@ -20,7 +20,7 @@ import is_transaction_valid_by_address_without_db
 import is_tarnsaction_valid_by_amount_without_db
 
 
-def generate(length:int, difficulty:int)->List[Block]:
+def generate(length:int)->Tuple[List[Block], List[Wallet], List[PrivateKey]]:
     output:List[Block] = []
 
 
@@ -58,7 +58,7 @@ def generate(length:int, difficulty:int)->List[Block]:
             amount=GLOBAL_CONST.PREMORTAL_MINING_REWARD,
             sender=GLOBAL_CONST.PREMORTAL_WALLET_ADDRES,
             receiver=rwa,
-            sender_signature="FAKE_SIGNATURE_FOR_TEST_PURPOSE_SIR_SO_DONT_BE_A_BRATTY_SLUT",
+            sender_signature=".",
             previous_hash=previous_hash,
             index=len(output),
             unix=time.time_ns(),
@@ -127,7 +127,7 @@ def generate(length:int, difficulty:int)->List[Block]:
 
 
         #random amount from sender's networth
-        amount:int = random.randint(0,balances[sender])
+        amount:int = random.randint(1,balances[sender])
         balances[sender] -= amount
 
         print("forming the transaction")
@@ -175,7 +175,7 @@ def generate(length:int, difficulty:int)->List[Block]:
 
 
 
-    return output
+    return (output, all_wallets, wallets_priv_keys)
 
 
 if __name__ == "__main__":
